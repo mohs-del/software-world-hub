@@ -14,16 +14,365 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      download_links: {
+        Row: {
+          created_at: string
+          file_size: string | null
+          id: string
+          is_direct: boolean | null
+          software_id: string
+          title: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          file_size?: string | null
+          id?: string
+          is_direct?: boolean | null
+          software_id: string
+          title?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          file_size?: string | null
+          id?: string
+          is_direct?: boolean | null
+          software_id?: string
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "download_links_software_id_fkey"
+            columns: ["software_id"]
+            isOneToOne: false
+            referencedRelation: "software"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platforms: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      software: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string | null
+          developer: string | null
+          downloads: number | null
+          full_description: string | null
+          icon: string | null
+          id: string
+          is_popular: boolean | null
+          is_quick_download: boolean | null
+          name: string
+          platform_id: string | null
+          rating: number | null
+          release_date: string | null
+          size: string | null
+          size_in_mb: number | null
+          subcategory_id: string | null
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          developer?: string | null
+          downloads?: number | null
+          full_description?: string | null
+          icon?: string | null
+          id?: string
+          is_popular?: boolean | null
+          is_quick_download?: boolean | null
+          name: string
+          platform_id?: string | null
+          rating?: number | null
+          release_date?: string | null
+          size?: string | null
+          size_in_mb?: number | null
+          subcategory_id?: string | null
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          developer?: string | null
+          downloads?: number | null
+          full_description?: string | null
+          icon?: string | null
+          id?: string
+          is_popular?: boolean | null
+          is_quick_download?: boolean | null
+          name?: string
+          platform_id?: string | null
+          rating?: number | null
+          release_date?: string | null
+          size?: string | null
+          size_in_mb?: number | null
+          subcategory_id?: string | null
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "software_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "software_platform_id_fkey"
+            columns: ["platform_id"]
+            isOneToOne: false
+            referencedRelation: "platforms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "software_subcategory_id_fkey"
+            columns: ["subcategory_id"]
+            isOneToOne: false
+            referencedRelation: "subcategories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      software_features: {
+        Row: {
+          feature: string
+          id: string
+          software_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          feature: string
+          id?: string
+          software_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          feature?: string
+          id?: string
+          software_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "software_features_software_id_fkey"
+            columns: ["software_id"]
+            isOneToOne: false
+            referencedRelation: "software"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      software_requirements: {
+        Row: {
+          id: string
+          requirement: string
+          software_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          id?: string
+          requirement: string
+          software_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          id?: string
+          requirement?: string
+          software_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "software_requirements_software_id_fkey"
+            columns: ["software_id"]
+            isOneToOne: false
+            referencedRelation: "software"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      software_screenshots: {
+        Row: {
+          created_at: string
+          id: string
+          software_id: string
+          sort_order: number | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          software_id: string
+          sort_order?: number | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          software_id?: string
+          sort_order?: number | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "software_screenshots_software_id_fkey"
+            columns: ["software_id"]
+            isOneToOne: false
+            referencedRelation: "software"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subcategories: {
+        Row: {
+          category_id: string
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcategories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +499,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
