@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import { Plus, Edit, Trash2, Search, X } from "lucide-react";
+import { Plus, Edit, Trash2, Search, X, Settings2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import SoftwareForm from "@/components/admin/SoftwareForm";
-
+import DownloadLinksManager from "@/components/admin/DownloadLinksManager";
+import ScreenshotsManager from "@/components/admin/ScreenshotsManager";
+import FeaturesManager from "@/components/admin/FeaturesManager";
+import RequirementsManager from "@/components/admin/RequirementsManager";
 interface Software {
   id: string;
   name: string;
@@ -26,7 +29,8 @@ const SoftwareManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingSoftware, setEditingSoftware] = useState<Software | null>(null);
-
+  const [managingSoftwareId, setManagingSoftwareId] = useState<string | null>(null);
+  const [managingSoftwareName, setManagingSoftwareName] = useState<string>("");
   const fetchSoftware = async () => {
     const { data, error } = await supabase
       .from("software")
@@ -151,6 +155,17 @@ const SoftwareManagement = () => {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => {
+                          setManagingSoftwareId(item.id);
+                          setManagingSoftwareName(item.name);
+                        }}
+                        title="مدیریت جزئیات"
+                      >
+                        <Settings2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleEdit(item)}
                       >
                         <Edit className="w-4 h-4" />
@@ -190,6 +205,28 @@ const SoftwareManagement = () => {
                 onSuccess={handleFormSuccess}
                 onCancel={handleFormClose}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Details Manager Modal */}
+      {managingSoftwareId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-card rounded-2xl border border-border w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-foreground">
+                مدیریت جزئیات: {managingSoftwareName}
+              </h2>
+              <Button variant="ghost" size="icon" onClick={() => setManagingSoftwareId(null)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            <div className="p-6 space-y-8">
+              <DownloadLinksManager softwareId={managingSoftwareId} />
+              <ScreenshotsManager softwareId={managingSoftwareId} />
+              <FeaturesManager softwareId={managingSoftwareId} />
+              <RequirementsManager softwareId={managingSoftwareId} />
             </div>
           </div>
         </div>

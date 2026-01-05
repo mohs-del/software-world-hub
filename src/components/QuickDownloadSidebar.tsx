@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import { Download, Star, TrendingUp } from "lucide-react";
-import { quickDownloadApps } from "@/data/softwareData";
+import { useQuickDownloadSoftware, useStats } from "@/hooks/useSoftware";
 import { Button } from "@/components/ui/button";
 
 const QuickDownloadSidebar = () => {
+  const { data: quickDownloadApps, isLoading } = useQuickDownloadSoftware(6);
+  const { data: stats } = useStats();
+
   return (
     <aside className="w-72 shrink-0 hidden xl:block">
       <div className="sticky top-24 space-y-6">
@@ -17,40 +20,50 @@ const QuickDownloadSidebar = () => {
           </div>
           
           <div className="space-y-3">
-            {quickDownloadApps.slice(0, 6).map((app) => (
-              <div
-                key={app.id}
-                className="group flex items-center gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 transition-all"
-              >
-                <div className="text-2xl">{app.icon}</div>
-                <div className="flex-1 min-w-0">
-                  <Link
-                    to={`/software/${app.id}`}
-                    className="font-medium text-foreground hover:text-primary transition-colors block truncate"
-                  >
-                    {app.name}
-                  </Link>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{app.size}</span>
-                    <span>•</span>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                      <span>{app.rating}</span>
+            {isLoading ? (
+              [1, 2, 3].map((i) => (
+                <div key={i} className="h-16 rounded-xl bg-secondary animate-pulse" />
+              ))
+            ) : quickDownloadApps && quickDownloadApps.length > 0 ? (
+              quickDownloadApps.map((app) => (
+                <div
+                  key={app.id}
+                  className="group flex items-center gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/60 transition-all"
+                >
+                  <div className="text-2xl">{app.icon || "📦"}</div>
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      to={`/software/${app.id}`}
+                      className="font-medium text-foreground hover:text-primary transition-colors block truncate"
+                    >
+                      {app.name}
+                    </Link>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{app.size || "-"}</span>
+                      <span>•</span>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                        <span>{app.rating || 0}</span>
+                      </div>
                     </div>
                   </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    asChild
+                  >
+                    <Link to={`/software/${app.id}`}>
+                      <Download className="w-4 h-4" />
+                    </Link>
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  asChild
-                >
-                  <Link to={`/software/${app.id}`}>
-                    <Download className="w-4 h-4" />
-                  </Link>
-                </Button>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                نرم‌افزاری موجود نیست
+              </p>
+            )}
           </div>
 
           <Link
@@ -67,15 +80,21 @@ const QuickDownloadSidebar = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">کل نرم‌افزارها</span>
-              <span className="font-bold text-primary">۱,۲۵۰+</span>
+              <span className="font-bold text-primary">
+                {stats?.softwareCount?.toLocaleString('fa-IR') || '۰'}
+              </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">دانلود امروز</span>
-              <span className="font-bold text-primary">۵,۸۴۲</span>
+              <span className="text-muted-foreground">کل دانلودها</span>
+              <span className="font-bold text-primary">
+                {stats?.totalDownloads?.toLocaleString('fa-IR') || '۰'}
+              </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">کاربران فعال</span>
-              <span className="font-bold text-primary">۱۲,۳۴۵</span>
+              <span className="text-muted-foreground">دسته‌بندی‌ها</span>
+              <span className="font-bold text-primary">
+                {stats?.categoryCount?.toLocaleString('fa-IR') || '۰'}
+              </span>
             </div>
           </div>
         </div>

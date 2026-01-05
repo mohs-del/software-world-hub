@@ -1,10 +1,32 @@
 import { Link } from "react-router-dom";
 import { Download, Star } from "lucide-react";
-import { softwareList } from "@/data/softwareData";
+import { usePopularSoftware } from "@/hooks/useSoftware";
 import { Button } from "@/components/ui/button";
 
 const FeaturedSoftware = () => {
-  const popularSoftware = softwareList.filter(s => s.isPopular).slice(0, 8);
+  const { data: popularSoftware, isLoading } = usePopularSoftware(8);
+
+  if (isLoading) {
+    return (
+      <section className="py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-1">نرم‌افزارهای محبوب</h2>
+            <p className="text-muted-foreground text-sm">پرطرفدارترین نرم‌افزارهای این هفته</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-32 rounded-xl bg-secondary animate-pulse" />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (!popularSoftware || popularSoftware.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-8">
@@ -31,7 +53,7 @@ const FeaturedSoftware = () => {
           >
             <div className="flex gap-4">
               <div className="w-16 h-16 rounded-xl bg-gradient-card flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
-                {software.icon}
+                {software.icon || "📦"}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2 mb-1">
@@ -39,7 +61,7 @@ const FeaturedSoftware = () => {
                     {software.name}
                   </h3>
                   <span className="text-xs px-2 py-1 rounded-full bg-secondary text-muted-foreground shrink-0">
-                    v{software.version}
+                    v{software.version || "1.0"}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3 line-clamp-1">
@@ -47,14 +69,14 @@ const FeaturedSoftware = () => {
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span>{software.size}</span>
+                    <span>{software.size || "-"}</span>
                     <span className="flex items-center gap-1">
                       <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                      {software.rating}
+                      {software.rating || 0}
                     </span>
                     <span className="flex items-center gap-1">
                       <Download className="w-3 h-3" />
-                      {software.downloads.toLocaleString('fa-IR')}
+                      {(software.downloads || 0).toLocaleString('fa-IR')}
                     </span>
                   </div>
                   <Button
