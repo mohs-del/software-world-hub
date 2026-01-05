@@ -3,14 +3,33 @@ import { Download, Star, ChevronLeft } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import QuickDownloadSidebar from "@/components/QuickDownloadSidebar";
-import { categories, getSoftwareByCategory } from "@/data/softwareData";
+import { useSoftwareByCategory } from "@/hooks/useSoftware";
 
 const CategoryPage = () => {
   const { category, subcategory } = useParams();
-  const categoryData = categories.find(c => c.id === category);
-  const software = getSoftwareByCategory(category || '');
+  const { data, isLoading, error } = useSoftwareByCategory(category || '', subcategory);
 
-  if (!categoryData) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 w-48 bg-secondary rounded" />
+            <div className="h-32 bg-secondary rounded-2xl" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-28 bg-secondary rounded-xl" />
+              ))}
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !data?.category) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -23,13 +42,7 @@ const CategoryPage = () => {
     );
   }
 
-  const subcategoryData = subcategory 
-    ? categoryData.subcategories.find(s => s.id === subcategory)
-    : null;
-
-  const filteredSoftware = subcategory
-    ? software.filter(s => s.subCategory === subcategory)
-    : software;
+  const { category: categoryData, subcategories, currentSubcategory, software } = data;
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,13 +53,13 @@ const CategoryPage = () => {
         <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
           <Link to="/" className="hover:text-primary transition-colors">خانه</Link>
           <ChevronLeft className="w-4 h-4" />
-          <Link to={`/category/${category}`} className="hover:text-primary transition-colors">
+          <Link to={`/category/${categoryData.slug}`} className="hover:text-primary transition-colors">
             {categoryData.name}
           </Link>
-          {subcategoryData && (
+          {currentSubcategory && (
             <>
               <ChevronLeft className="w-4 h-4" />
-              <span className="text-foreground">{subcategoryData.name}</span>
+              <span className="text-foreground">{currentSubcategory.name}</span>
             </>
           )}
         </nav>
@@ -54,10 +67,10 @@ const CategoryPage = () => {
         {/* Header */}
         <div className="glass rounded-2xl p-8 mb-8 border border-border/50">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            {subcategoryData ? subcategoryData.name : categoryData.name}
+            {currentSubcategory ? currentSubcategory.name : categoryData.name}
           </h1>
           <p className="text-muted-foreground">
-            {filteredSoftware.length} نرم‌افزار در این دسته‌بندی
+            {software.length} نرم‌افزار در این دسته‌بندی
           </p>
         </div>
 
@@ -65,14 +78,14 @@ const CategoryPage = () => {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             {/* Subcategories (if viewing main category) */}
-            {!subcategory && categoryData.subcategories.length > 0 && (
+            {!subcategory && subcategories.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-xl font-bold text-foreground mb-4">زیردسته‌ها</h2>
                 <div className="flex flex-wrap gap-3">
-                  {categoryData.subcategories.map((sub) => (
+                  {subcategories.map((sub) => (
                     <Link
                       key={sub.id}
-                      to={`/category/${category}/${sub.id}`}
+                      to={`/category/${categoryData.slug}/${sub.slug}`}
                       className="px-4 py-2 rounded-full bg-secondary text-muted-foreground hover:bg-primary/20 hover:text-primary transition-all"
                     >
                       {sub.name}
@@ -83,9 +96,9 @@ const CategoryPage = () => {
             )}
 
             {/* Software List */}
-            {filteredSoftware.length > 0 ? (
+            {software.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {filteredSoftware.map((item) => (
+                {software.map((item) => (
                   <Link
                     key={item.id}
                     to={`/software/${item.id}`}
@@ -93,7 +106,7 @@ const CategoryPage = () => {
                   >
                     <div className="flex gap-4">
                       <div className="w-16 h-16 rounded-xl bg-gradient-card flex items-center justify-center text-3xl shrink-0">
-                        {item.icon}
+                        {item.icon || "📦"}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-1">
@@ -101,21 +114,21 @@ const CategoryPage = () => {
                             {item.name}
                           </h3>
                           <span className="text-xs px-2 py-1 rounded-full bg-secondary text-muted-foreground shrink-0">
-                            {item.platform}
+                            {item.platforms?.name || "-"}
                           </span>
                         </div>
                         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                           {item.description}
                         </p>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <span>{item.size}</span>
+                          <span>{item.size || "-"}</span>
                           <span className="flex items-center gap-1">
                             <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                            {item.rating}
+                            {item.rating || 0}
                           </span>
                           <span className="flex items-center gap-1">
                             <Download className="w-3 h-3" />
-                            {item.downloads.toLocaleString('fa-IR')}
+                            {(item.downloads || 0).toLocaleString('fa-IR')}
                           </span>
                         </div>
                       </div>
