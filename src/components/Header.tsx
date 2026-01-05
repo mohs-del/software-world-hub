@@ -1,13 +1,15 @@
-import { Search, Menu, Download, Home } from "lucide-react";
+import { Search, Menu, Download, Home, User, LogOut, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import MegaMenu from "@/components/MegaMenu";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const { user, isAdmin, signOut } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,9 +45,9 @@ const Header = () => {
             <MegaMenu />
           </div>
 
-          {/* Search */}
-          <form onSubmit={handleSearch} className="hidden md:flex items-center gap-4">
-            <div className="relative">
+          {/* Search + Auth */}
+          <div className="hidden md:flex items-center gap-4">
+            <form onSubmit={handleSearch} className="relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
@@ -54,8 +56,37 @@ const Header = () => {
                 placeholder="جستجوی نرم‌افزار..."
                 className="w-64 h-10 pr-10 pl-4 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               />
-            </div>
-          </form>
+            </form>
+
+            {user ? (
+              <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Settings className="w-4 h-4" />
+                      پنل ادمین
+                    </Button>
+                  </Link>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => signOut()}
+                  className="gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  خروج
+                </Button>
+              </div>
+            ) : (
+              <Link to="/auth">
+                <Button variant="gradient" size="sm" className="gap-2">
+                  <User className="w-4 h-4" />
+                  ورود / ثبت‌نام
+                </Button>
+              </Link>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           <Button
