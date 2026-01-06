@@ -49,23 +49,30 @@ const Footer = () => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="w-4 h-4 text-primary" />
-                <span>info@softwareworld.ir</span>
+                <a href="https://merwisr.work.gd" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">merwisr.work.gd</a>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="w-4 h-4 text-primary" />
-                <span>۰۲۱-۱۲۳۴۵۶۷۸</span>
+                <span dir="ltr">+93 748002981</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="w-4 h-4 text-primary" />
-                <span>تهران، ایران</span>
+                <span>مزار شریف، افغانستان</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-border pt-8 text-center">
+        <div className="border-t border-border pt-8 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
-            © ۱۴۰۳ دنیای نرم‌افزار. تمامی حقوق محفوظ است.
+            کلیه حقوق این وبسایت متعلق به سازنده{" "}
+            <a href="https://merwisr.work.gd" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
+              میرویس رحیمی
+            </a>{" "}
+            می‌باشد.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            © ۱۴۰۴ - 2026
           </p>
         </div>
       </div>
